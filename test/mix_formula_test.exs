@@ -27,20 +27,20 @@ defmodule MixFormulaTest do
   @tag :tmp_dir
   test "render basic template return :ok", %{tmp_dir: tmp_dir, root: root} do
     File.cd!(tmp_dir, fn ->
-      {result, _msg} = MixFormula.render(Path.join(root, "test_templates/basic"))
-      assert result == :ok
+      {result, msg} = MixFormula.render(Path.join(root, "test_templates/basic"))
+      assert(result == :ok, msg)
     end)
   end
 
   @tag :tmp_dir
   test "render basic template", %{tmp_dir: tmp_dir, root: root} do
     File.cd!(tmp_dir, fn ->
-      {result, _msg} =
+      {result, msg} =
         MixFormula.render(Path.join(root, "test_templates/basic"),
           name: "my_project"
         )
 
-      assert result == :ok
+      assert(result == :ok, msg)
       assert dir?([tmp_dir, "my_project"])
     end)
   end
@@ -48,13 +48,13 @@ defmodule MixFormulaTest do
   @tag :tmp_dir
   test "render basic_nested template", %{tmp_dir: tmp_dir, root: root} do
     File.cd!(tmp_dir, fn ->
-      {result, _msg} =
+      {result, msg} =
         MixFormula.render(Path.join(root, "test_templates/basic_nested"),
           name: "foo",
           src_name: "bar"
         )
 
-      assert result == :ok
+      assert(result == :ok, msg)
 
       src_file = Path.join([tmp_dir, "foo", "src", "bar", "bar.ex"])
       assert File.exists?(src_file)
@@ -69,13 +69,13 @@ defmodule MixFormulaTest do
   @tag :tmp_dir
   test "render with templates inside context", %{tmp_dir: tmp_dir, root: root} do
     File.cd!(tmp_dir, fn ->
-      {result, _msg} =
+      {result, msg} =
         MixFormula.render(Path.join(root, "test_templates/templated_params"),
           name: "my_project",
           ext: "txt"
         )
 
-      assert result == :ok
+      assert(result == :ok, msg)
 
       assert dir?([tmp_dir, "my_project"])
       assert exists?([tmp_dir, "my_project", "my_project.txt"])
@@ -85,12 +85,12 @@ defmodule MixFormulaTest do
   @tag :tmp_dir
   test "pre and post hooks", %{tmp_dir: tmp_dir, root: root} do
     File.cd!(tmp_dir, fn ->
-      {result, _msg} =
+      {result, msg} =
         MixFormula.render(Path.join(root, "test_templates/with_hooks"),
           name: "my_project"
         )
 
-      assert result == :ok
+      assert(result == :ok, msg)
 
       assert dir?([tmp_dir, "my_project"])
 
@@ -107,12 +107,12 @@ defmodule MixFormulaTest do
   @tag :tmp_dir
   test "hooks can modify context", %{tmp_dir: tmp_dir, root: root} do
     File.cd!(tmp_dir, fn ->
-      {result, _msg} =
+      {result, msg} =
         MixFormula.render(Path.join(root, "test_templates/with_hooks_modifying_context"),
           name: "my_project"
         )
 
-      assert result == :ok
+      assert(result == :ok, msg)
 
       # The Pre-hook modifies the name
       assert dir?([tmp_dir, "project-my"])
