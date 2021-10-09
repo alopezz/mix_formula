@@ -1,0 +1,5 @@
+{
+  "name": null,
+  "ext": null,
+  "filename": "<%= formula.name  %>.<%= formula.ext %>"
+}
