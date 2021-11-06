@@ -10,7 +10,7 @@ defmodule MixFormula.MixProject do
       deps: deps(),
       description: description(),
       package: package(),
-      docs: docs(),
+      docs: docs()
     ]
   end
 

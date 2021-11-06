@@ -41,9 +41,10 @@ defmodule MixFormula.Context do
   Look for templates inside bindings and resolve them.
   """
   def resolve_templates(context) do
-    # TODO We know that this works for templates that refer non-template fields;
+    # TODO We know that this works for templates that refer to non-template fields;
     # we should check what happens when templates refer to other templates
     Enum.map(context, fn {key, value} ->
+      value = value || ""
       {key, EEx.eval_string(value, formula: context.bindings)}
     end)
     |> Enum.into(Context.new())

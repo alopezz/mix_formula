@@ -25,10 +25,15 @@ defmodule MixFormulaTest do
   end
 
   @tag :tmp_dir
-  test "render basic template return :ok", %{tmp_dir: tmp_dir, root: root} do
+  test "render basic template returns :ok and uses default formula value", %{
+    tmp_dir: tmp_dir,
+    root: root
+  } do
     File.cd!(tmp_dir, fn ->
       {result, msg} = MixFormula.render(Path.join(root, "test_templates/basic"))
+
       assert(result == :ok, msg)
+      assert dir?([tmp_dir, "basic"])
     end)
   end
 
@@ -63,6 +68,24 @@ defmodule MixFormulaTest do
                "defmodule Foo do",
                "# Doing stuff for project foo"
              ])
+    end)
+  end
+
+  @tag :tmp_dir
+  test "render basic_nested template with a field left as null", %{tmp_dir: tmp_dir, root: root} do
+    # This also tests that file/folder names that evaluate to an empty
+    # string are omitted from the project generation
+    File.cd!(tmp_dir, fn ->
+      {result, msg} =
+        MixFormula.render(Path.join(root, "test_templates/basic_nested"),
+          name: "foo"
+        )
+
+      assert(result == :ok, msg)
+
+      assert dir?([tmp_dir, "foo"])
+      src_file = Path.join([tmp_dir, "foo", "src", "bar", "bar.ex"])
+      assert !File.exists?(src_file)
     end)
   end
 
