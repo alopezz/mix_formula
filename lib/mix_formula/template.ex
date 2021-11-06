@@ -97,11 +97,22 @@ defmodule MixFormula.Template do
     with :ok <- File.mkdir(new_root),
          :ok <- each_until_error(children, fn child -> generate_from_tree(child, new_root) end) do
       {:ok, new_root}
+    else
+      {:error, reason} -> {:error, mkdir_error_to_string(reason, new_root)}
     end
   end
 
   defp generate_from_tree({:file, name, contents}, root) do
     File.write(Path.join(root, name), contents)
+  end
+
+  defp mkdir_error_to_string(reason, path) do
+    case reason do
+      :eacces -> "Missing search or write permissions for the parent directories of #{path}"
+      :eexist -> "There is already a file or directory named #{path}"
+      :enoent -> "A component of #{path} does not exist"
+      :enospc -> "There is no space left on the device"
+    end
   end
 
   # Call fun on each of the elements of enumerable, stopping early if

@@ -43,8 +43,10 @@ defmodule Mix.Tasks.Formula do
         {String.to_atom(name), value}
       end)
 
-    case MixFormula.render(template_path, input_bindings) do
-      {:ok, msg} -> Mix.shell().info(msg)
+    with {:ok, template} <- MixFormula.load_template(template_path),
+         {:ok, msg} <- MixFormula.render(template, input_bindings) do
+      Mix.shell().info(msg)
+    else
       {:error, msg} -> Mix.shell().error(msg)
     end
   end
