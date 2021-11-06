@@ -78,3 +78,11 @@ macros to define hooks for the template.
 For now, you can look at the examples in
 [test_templates](./test_templates) to learn more about how to use
 them.
+
+### Extensions
+
+A template can also define custom functionality in the form of modules
+that become accessible inside all `eex` templates. This is done simply
+by adding Elixir modules inside the template's `extensions`
+folder. All Elixir files within that folder will be required before
+any template rendering takes place.

@@ -4,7 +4,8 @@ defmodule MixFormula.Template do
   defstruct tree: %{}, context: %Context{}, hooks: %HookRunner{}
 
   def from_path(path) do
-    with {:ok, template_root} <- find_folder_with_tags(path),
+    with :ok <- load_extensions(path),
+         {:ok, template_root} <- find_folder_with_tags(path),
          {:ok, context} <- load_formula_json(path),
          {:ok, hooks} <- load_hooks(path, context),
          {:ok, tree} <- build_tree(Path.join(path, template_root)) do
@@ -194,5 +195,29 @@ defmodule MixFormula.Template do
 
   defp hooks_folder(path) do
     Path.join(path, "hooks")
+  end
+
+  defp load_extensions(path) do
+    path
+    |> extensions_folder()
+    |> Path.join("*.ex")
+    |> Path.wildcard()
+    |> require_files
+
+    :ok
+  end
+
+  defp require_files(paths) do
+    try do
+      Enum.each(paths, &Code.require_file/1)
+    rescue
+      Code.LoadError -> :error
+    else
+      _ -> :ok
+    end
+  end
+
+  defp extensions_folder(path) do
+    Path.join(path, "extensions")
   end
 end

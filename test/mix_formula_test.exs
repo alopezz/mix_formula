@@ -160,6 +160,21 @@ defmodule MixFormulaTest do
     end)
   end
 
+  @tag :tmp_dir
+  test "extension modules are available inside templates", %{tmp_dir: tmp_dir, root: root} do
+    File.cd!(tmp_dir, fn ->
+      {result, _msg} =
+        MixFormula.render(Path.join(root, "test_templates/with_extension"),
+          name: "my_project_"
+        )
+
+      assert result == :ok
+      # The template for the root directory calls the custom defined
+      # `add_hello` function, which simply appends "hello"
+      assert dir?([tmp_dir, "my_project_hello"])
+    end)
+  end
+
   # A helper that wraps File.dir? joining paths first
   defp dir?(args) do
     File.dir?(Path.join(args))
