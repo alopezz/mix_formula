@@ -6,17 +6,24 @@ defmodule MixFormula.Context do
   alias MixFormula.Context
   defstruct bindings: %{}, variables: []
 
-  def new(bindings \\ %{})
-
-  def new(%{} = bindings) do
-    %Context{bindings: bindings, variables: Map.keys(bindings)}
-  end
-
   # Here we assume a list of key, value pairs, though not necessarily
-  # keyword lists as we may allow the key to be a string here
-  def new(ordered_bindings) do
+  # keyword lists as we allow the key to be a string here
+  def new(ordered_bindings \\ []) do
     {variables, _values} = Enum.unzip(ordered_bindings)
-    %Context{bindings: Map.new(ordered_bindings), variables: variables}
+    variables = Enum.map(variables, &to_string/1)
+
+    # Bindings are converted to atoms
+    bindings =
+      Enum.map(
+        ordered_bindings,
+        fn
+          {key, value} when is_binary(key) -> {String.to_atom(key), value}
+          binding -> binding
+        end
+      )
+      |> Enum.into(%{})
+
+    %Context{bindings: bindings, variables: variables}
   end
 
   @doc """

@@ -177,20 +177,16 @@ defmodule MixFormula.Template do
   end
 
   defp load_formula_json(template_path) do
-    with {:ok, map} <- template_path |> formula_json_path |> load_object_from_file do
-      {:ok,
-       map
-       |> Enum.map(fn {key, value} -> {String.to_atom(key), value} end)
-       |> MixFormula.Context.new()}
+    with {:ok, map} <- formula_json_path(template_path) |> load_object_from_file() do
+      {:ok, MixFormula.Context.new(map)}
     else
       _ -> {:error, "Couldn't find a valid 'formula.json' file in the template"}
     end
   end
 
   defp load_object_from_file(path) do
-    with {:ok, contents} <- File.read(path),
-         {:ok, map} <- Jason.decode(contents, objects: :ordered_objects) do
-      {:ok, map}
+    with {:ok, contents} <- File.read(path) do
+      Jason.decode(contents, objects: :ordered_objects)
     end
   end
 

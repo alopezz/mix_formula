@@ -178,7 +178,7 @@ defmodule MixFormulaTest do
   test "template variables can be obtained in definition order", %{root: root} do
     {:ok, template} = MixFormula.load_template(Path.join(root, "test_templates/templated_params"))
 
-    assert MixFormula.template_variables(template) == [:name, :ext, :filename]
+    assert MixFormula.template_variables(template) == ["name", "ext", "filename"]
   end
 
   # A helper that wraps File.dir? joining paths first
