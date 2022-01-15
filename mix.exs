@@ -22,7 +22,7 @@ defmodule MixFormula.MixProject do
 
   defp deps do
     [
-      {:jason, "~> 1.2"},
+      {:jason, "~> 1.3"},
       {:ex_doc, "~> 0.24", only: :dev, runtime: false}
     ]
   end

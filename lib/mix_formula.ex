@@ -28,4 +28,10 @@ defmodule MixFormula do
   """
   @spec load_template(binary()) :: {:ok | :error, binary()}
   def load_template(template_path), do: Template.from_path(template_path)
+
+  @doc """
+  Get a list of template variable names
+  """
+  @spec template_variables(%Template{}) :: [binary()]
+  def template_variables(%Template{} = template), do: Template.variables(template)
 end

@@ -38,7 +38,7 @@ defmodule MixFormula.Hook do
         rescue
           err -> {:halt, {:error, err}}
         else
-          {:cont, context_update} -> {:cont, Enum.into(context_update, context)}
+          {:cont, context_update} -> {:cont, MixFormula.Context.update!(context, context_update)}
           {:halt, reason} -> {:halt, {:error, reason}}
           _ -> {:cont, context}
         end

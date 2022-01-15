@@ -45,6 +45,10 @@ defmodule MixFormula.Template do
     end
   end
 
+  def variables(template) do
+    template.context.variables
+  end
+
   # Recursively build a tree by looking at the contents of the folder
   # at path
   defp build_tree(path) do
@@ -173,19 +177,19 @@ defmodule MixFormula.Template do
   end
 
   defp load_formula_json(template_path) do
-    with {:ok, map} <- template_path |> formula_json_path |> load_map_from_file do
+    with {:ok, map} <- template_path |> formula_json_path |> load_object_from_file do
       {:ok,
        map
        |> Enum.map(fn {key, value} -> {String.to_atom(key), value} end)
-       |> Enum.into(MixFormula.Context.new())}
+       |> MixFormula.Context.new()}
     else
       _ -> {:error, "Couldn't find a valid 'formula.json' file in the template"}
     end
   end
 
-  defp load_map_from_file(path) do
+  defp load_object_from_file(path) do
     with {:ok, contents} <- File.read(path),
-         {:ok, map} <- Jason.decode(contents) do
+         {:ok, map} <- Jason.decode(contents, objects: :ordered_objects) do
       {:ok, map}
     end
   end

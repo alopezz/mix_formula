@@ -4,10 +4,19 @@ defmodule MixFormula.Context do
   inside formula.json file with user input.
   """
   alias MixFormula.Context
-  defstruct bindings: %{}
+  defstruct bindings: %{}, variables: []
 
-  def new(bindings \\ %{}) do
-    %Context{bindings: bindings}
+  def new(bindings \\ %{})
+
+  def new(%{} = bindings) do
+    %Context{bindings: bindings, variables: Map.keys(bindings)}
+  end
+
+  # Here we assume a list of key, value pairs, though not necessarily
+  # keyword lists as we may allow the key to be a string here
+  def new(ordered_bindings) do
+    {variables, _values} = Enum.unzip(ordered_bindings)
+    %Context{bindings: Map.new(ordered_bindings), variables: variables}
   end
 
   @doc """
@@ -47,7 +56,7 @@ defmodule MixFormula.Context do
       value = value || ""
       {key, EEx.eval_string(value, formula: context.bindings)}
     end)
-    |> Enum.into(Context.new())
+    |> Context.new()
   end
 end
 
@@ -67,19 +76,5 @@ defimpl Enumerable, for: MixFormula.Context do
 
   def slice(context) do
     Enumerable.Map.slice(context)
-  end
-end
-
-defimpl Collectable, for: MixFormula.Context do
-  def into(context) do
-    # Use Map's implementation on the bindings
-    {acc, map_fun} = Collectable.Map.into(context.bindings)
-
-    fun = fn
-      map_acc, :done -> MixFormula.Context.new(map_acc)
-      map_acc, cmd -> map_fun.(map_acc, cmd)
-    end
-
-    {acc, fun}
   end
 end
